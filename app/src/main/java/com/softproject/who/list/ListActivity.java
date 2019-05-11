@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
-
+import com.softproject.who.model.APIUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -29,8 +29,9 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
         Intent intent = getIntent();
         mSocialWebId = intent.getIntExtra("socialWebId", -1);
         switch (mSocialWebId){
-            case 0:
+            case APIUtils.FACEBOOK_ID:
                 Toast.makeText(getApplicationContext(), "Facebook", Toast.LENGTH_SHORT).show();
+
                 break;
         }
     }

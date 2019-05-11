@@ -1,5 +1,6 @@
 package com.softproject.who.main;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mPresenter = new MainPresenter(this);
+
     }
 
     @Override

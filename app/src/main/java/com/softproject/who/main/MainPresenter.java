@@ -11,24 +11,33 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.softproject.who.BaseContract;
+import com.softproject.who.model.APIUtils;
 
 import java.util.Arrays;
 
-import static com.softproject.who.model.APIUtils.FACEBOOK_ID;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class MainPresenter implements BaseContract.BasePresenter {
 
-
-
-    private MainActivity mActivity;
     public CallbackManager facebookCallbackManager;
+    private CompositeDisposable mDisposable;
+    private MainActivity mActivity;
+    private APIUtils mAPIUtils;
 
     public MainPresenter(MainActivity activity) {
         mActivity = activity;
+        mAPIUtils = new APIUtils();
     }
 
     @Override
     public void onStart() {
+        mDisposable = new CompositeDisposable();
         facebookInit();
     }
 
@@ -38,7 +47,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
         if(isLoggedIn){
             Log.d("facebook", "Logged Facebook");
             mActivity.showMessage("Logged Facebook");
-            mActivity.startListActivity(FACEBOOK_ID);
+            authorization(APIUtils.FACEBOOK_ID, accessToken.getToken());
         }else{
             Log.d("facebook", "No");
             mActivity.showMessage("No");
@@ -49,7 +58,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
             public void onSuccess(LoginResult loginResult) {
                 Log.d("facebook", loginResult.getAccessToken().getToken());
                 mActivity.showMessage("Successfully logged in Facebook");
-                mActivity.startListActivity(FACEBOOK_ID);
+                authorization(APIUtils.FACEBOOK_ID, loginResult.getAccessToken().getToken());
             }
 
             @Override
@@ -68,8 +77,28 @@ public class MainPresenter implements BaseContract.BasePresenter {
         LoginManager.getInstance().logInWithReadPermissions(mActivity, Arrays.asList("public_profile"));
     }
 
+    public void authorization(final int socialWeb, String socialWebToken){
+        Disposable authorization = mAPIUtils.singIn(socialWeb, socialWebToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableCompletableObserver(){
+                    @Override
+                    public void onComplete() {
+                        Toast.makeText(mActivity.getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
+                        mActivity.startListActivity(socialWeb);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(mActivity.getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+                });
+        mDisposable.add(authorization);
+    }
+
     @Override
     public void onStop() {
-
+        mDisposable.clear();
     }
 }
