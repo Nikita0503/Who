@@ -15,7 +15,7 @@ public class APIUtils {
 
     public static final int FACEBOOK_ID = 1;
     public static final String BASE_URL = "http://ec2-54-191-215-22.us-west-2.compute.amazonaws.com/api/";
-    public static final String TOKEN = "token 90aedfe273129b27ea1676011db99864f2e12514";
+    public static final String TOKEN = "token bbd674b17c9a13586d4729f28a5986d69076bf92";
 
     public Completable singIn(int socialWeb, String socialWebToken){
         Retrofit retrofit = getClient(BASE_URL);

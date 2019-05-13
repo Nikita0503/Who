@@ -32,12 +32,13 @@ public class Userdata {
     @SerializedName("token")
     @Expose
     public String token;
-    //public Userdata(int socialWeb, String socialWebId, int number, String username) {
-    //    this.socialWeb = socialWeb;
-    //    this.socialWebId = socialWebId;
-    //    this.number = number;
-    //    this.username = username;
-//
-    //}
-
+    @SerializedName("age")
+    @Expose
+    public Integer age;
+    @SerializedName("birthday")
+    @Expose
+    public String birthday;
+    @SerializedName("gender")
+    @Expose
+    public String gender;
 }

@@ -1,6 +1,13 @@
 package com.softproject.who.list;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +20,8 @@ import com.bumptech.glide.Glide;
 import com.softproject.who.R;
 import com.softproject.who.model.data.Userdata;
 import com.softproject.who.model.APIUtils;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
 
@@ -50,10 +59,10 @@ public class UsersListAdapter extends RecyclerView.Adapter {
                         .into(holder.imageViewSocialWeb);
                 break;
         }
-        String photoUrl = mUsers.get(i).photo.substring(2, mUsers.get(i).photo.length()-3);
+
         Glide
                 .with(mContext)
-                .load(photoUrl)
+                .load(mUsers.get(i).photo)
                 .into(holder.imageViewAvatar);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,12 +74,17 @@ public class UsersListAdapter extends RecyclerView.Adapter {
                     }
                     if(mUsers.get(i).authDate!=null){
                         holder.textViewAge.setVisibility(View.VISIBLE);
-                        holder.textViewAge.setText(mUsers.get(i).authDate);
+                        holder.textViewAge.setText(String.valueOf(mUsers.get(i).age));
+                    }
+                    if(mUsers.get(i).gender!=null){
+                        holder.textViewGender.setVisibility(View.VISIBLE);
+                        holder.textViewGender.setText(String.valueOf(mUsers.get(i).gender));
                     }
                     mUsers.get(i).isHidden = true;
                 }else{
                     holder.textViewLocation.setVisibility(View.GONE);
                     holder.textViewAge.setVisibility(View.GONE);
+                    holder.textViewGender.setVisibility(View.GONE);
                     mUsers.get(i).isHidden = false;
                 }
             }
@@ -93,6 +107,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         TextView textViewUsername;
         TextView textViewLocation;
         TextView textViewAge;
+        TextView textViewGender;
         ImageView imageViewAvatar;
         ImageView imageViewSocialWeb;
 
@@ -102,8 +117,12 @@ public class UsersListAdapter extends RecyclerView.Adapter {
             textViewUsername = (TextView) itemView.findViewById(R.id.textViewUsername);
             textViewLocation = (TextView) itemView.findViewById(R.id.textViewLocation);
             textViewAge = (TextView) itemView.findViewById(R.id.textViewAge);
+            textViewGender = (TextView) itemView.findViewById(R.id.textViewGender);
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.imageViewAvatar);
             imageViewSocialWeb = (ImageView) itemView.findViewById(R.id.imageViewSocialWeb);
         }
     }
+
+
+
 }

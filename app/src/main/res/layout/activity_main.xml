@@ -115,7 +115,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageViewVkontakte"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_google" />
+            app:srcCompat="@drawable/ic_twitter" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

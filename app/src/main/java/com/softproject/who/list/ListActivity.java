@@ -32,14 +32,6 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
         setContentView(R.layout.activity_list);
         ButterKnife.bind(this);
         mPresenter = new ListPresenter(this);
-        Intent intent = getIntent();
-        mSocialWebId = intent.getIntExtra("socialWebId", -1);
-        switch (mSocialWebId){
-            case APIUtils.FACEBOOK_ID:
-                Toast.makeText(getApplicationContext(), "Facebook", Toast.LENGTH_SHORT).show();
-
-                break;
-        }
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.softproject.who.main;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -38,20 +41,21 @@ public class MainPresenter implements BaseContract.BasePresenter {
     @Override
     public void onStart() {
         mDisposable = new CompositeDisposable();
+        init();
         facebookInit();
     }
 
-    private void facebookInit(){
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if(isLoggedIn){
-            Log.d("facebook", "Logged Facebook");
-            mActivity.showMessage("Logged Facebook");
-            authorization(APIUtils.FACEBOOK_ID, accessToken.getToken());
-        }else{
-            Log.d("facebook", "No");
-            mActivity.showMessage("No");
+    private void init(){
+        SharedPreferences sp = mActivity.getSharedPreferences("Who",
+                Context.MODE_PRIVATE);
+        String token = sp.getString("token", "");
+        if(!token.equals("")){
+            mActivity.startListActivity();
         }
+
+    }
+
+    private void facebookInit(){
         facebookCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -59,6 +63,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
                 Log.d("facebook", loginResult.getAccessToken().getToken());
                 mActivity.showMessage("Successfully logged in Facebook");
                 authorization(APIUtils.FACEBOOK_ID, loginResult.getAccessToken().getToken());
+                setAccount(loginResult.getAccessToken().getToken(), APIUtils.FACEBOOK_ID);
             }
 
             @Override
@@ -85,7 +90,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
                     @Override
                     public void onComplete() {
                         Toast.makeText(mActivity.getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
-                        mActivity.startListActivity(socialWeb);
+                        mActivity.startListActivity();
                     }
 
                     @Override
@@ -95,6 +100,14 @@ public class MainPresenter implements BaseContract.BasePresenter {
                     }
                 });
         mDisposable.add(authorization);
+    }
+
+    private void setAccount(String token, int socialWeb){
+        SharedPreferences activityPreferences = mActivity.getSharedPreferences("Who", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = activityPreferences.edit();
+        editor.putString("token", token);
+        editor.putInt("socialWeb", socialWeb);
+        editor.commit();
     }
 
     @Override
