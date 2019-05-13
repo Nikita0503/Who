@@ -37,11 +37,12 @@ public class UsersListAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        UserViewHolder holder = (UserViewHolder) viewHolder;
-        holder.textViewNumber.setText(String.valueOf(mUsers.get(i).number));
-        holder.textViewUsername.setText(mUsers.get(i).username);
-        switch (mUsers.get(i).socialWeb){
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
+        final UserViewHolder holder = (UserViewHolder) viewHolder;
+        //holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
+        holder.textViewNumber.setText(String.valueOf(i+1));
+        holder.textViewUsername.setText(mUsers.get(i).name);
+        switch (mUsers.get(i).social){
             case APIUtils.FACEBOOK_ID:
                 Glide
                         .with(mContext)
@@ -49,16 +50,41 @@ public class UsersListAdapter extends RecyclerView.Adapter {
                         .into(holder.imageViewSocialWeb);
                 break;
         }
+        String photoUrl = mUsers.get(i).photo.substring(2, mUsers.get(i).photo.length()-3);
         Glide
                 .with(mContext)
-                .load(mUsers.get(i).imageURL)
-                .into(holder.imageViewSocialWeb);
-
+                .load(photoUrl)
+                .into(holder.imageViewAvatar);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!mUsers.get(i).isHidden){
+                    if(mUsers.get(i).location!=null){
+                        holder.textViewLocation.setVisibility(View.VISIBLE);
+                        holder.textViewLocation.setText(mUsers.get(i).location);
+                    }
+                    if(mUsers.get(i).authDate!=null){
+                        holder.textViewAge.setVisibility(View.VISIBLE);
+                        holder.textViewAge.setText(mUsers.get(i).authDate);
+                    }
+                    mUsers.get(i).isHidden = true;
+                }else{
+                    holder.textViewLocation.setVisibility(View.GONE);
+                    holder.textViewAge.setVisibility(View.GONE);
+                    mUsers.get(i).isHidden = false;
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return mUsers.size();
+    }
+
+    public void addUsers(ArrayList<Userdata> users){
+        mUsers.addAll(users);
+        notifyDataSetChanged();
     }
 
     public static class UserViewHolder extends RecyclerView.ViewHolder{

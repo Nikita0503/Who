@@ -1,14 +1,20 @@
 package com.softproject.who.list;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.softproject.who.BaseContract;
 import com.softproject.who.model.APIUtils;
+import com.softproject.who.model.data.Userdata;
 
+import java.util.ArrayList;
+
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class ListPresenter implements BaseContract.BasePresenter {
@@ -28,7 +34,24 @@ public class ListPresenter implements BaseContract.BasePresenter {
         mDisposable = new CompositeDisposable();
     }
 
+    public void getUsers(){
+        Disposable newUsers = mAPIUtils.getUsers()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<ArrayList<Userdata>>() {
+                    @Override
+                    public void onSuccess(ArrayList<Userdata> users) {
+                        Log.d("Users", "Users count = " + users.size());
+                        mActivity.addUsers(users);
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
+        mDisposable.add(newUsers);
+    }
 
     @Override
     public void onStop() {

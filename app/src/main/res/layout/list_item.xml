@@ -56,6 +56,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Location"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@+id/imageViewAvatar"
         app:layout_constraintTop_toBottomOf="@+id/imageViewAvatar" />
 
@@ -65,6 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Age"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@+id/imageViewAvatar"
         app:layout_constraintTop_toBottomOf="@+id/textViewLocation" />
 </android.support.constraint.ConstraintLayout>
