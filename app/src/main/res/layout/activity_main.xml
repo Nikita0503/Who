@@ -75,7 +75,7 @@
 
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageViewGoogle"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewTwitter"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_facebook" />
@@ -105,7 +105,7 @@
             app:srcCompat="@drawable/ic_vkontakte" />
 
         <ImageView
-            android:id="@+id/imageViewGoogle"
+            android:id="@+id/imageViewTwitter"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_marginTop="8dp"
@@ -117,5 +117,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_twitter" />
     </android.support.constraint.ConstraintLayout>
+
 
 </android.support.constraint.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.softproject.who.list;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,8 +8,7 @@ import android.widget.Toast;
 
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
-import com.softproject.who.model.APIUtils;
-import com.softproject.who.model.data.Userdata;
+import com.softproject.who.model.data.UserdataForList;
 
 import java.util.ArrayList;
 
@@ -48,7 +46,7 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
         mPresenter.getUsers();
     }
 
-    public void addUsers(ArrayList<Userdata> users){
+    public void addUsers(ArrayList<UserdataForList> users){
         mAdapter.addUsers(users);
     }
 

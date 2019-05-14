@@ -1,9 +1,16 @@
 package com.softproject.who.main;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 
@@ -11,10 +18,24 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.softproject.who.BaseContract;
+import com.softproject.who.R;
 import com.softproject.who.model.APIUtils;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.AuthHandler;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+
+import org.json.JSONObject;
 
 import java.util.Arrays;
 
@@ -29,6 +50,7 @@ import io.reactivex.schedulers.Schedulers;
 public class MainPresenter implements BaseContract.BasePresenter {
 
     public CallbackManager facebookCallbackManager;
+    public TwitterAuthClient twitterAuthClient;
     private CompositeDisposable mDisposable;
     private MainActivity mActivity;
     private APIUtils mAPIUtils;
@@ -41,16 +63,22 @@ public class MainPresenter implements BaseContract.BasePresenter {
     @Override
     public void onStart() {
         mDisposable = new CompositeDisposable();
-        init();
-        facebookInit();
+        if(checkIsLogged()){
+            mActivity.startListActivity();
+        }else{
+            facebookInit();
+            twitterInit();
+        }
     }
 
-    private void init(){
+    private boolean checkIsLogged(){
         SharedPreferences sp = mActivity.getSharedPreferences("Who",
                 Context.MODE_PRIVATE);
         String token = sp.getString("token", "");
         if(!token.equals("")){
-            mActivity.startListActivity();
+            return true;
+        }else{
+            return false;
         }
 
     }
@@ -60,15 +88,15 @@ public class MainPresenter implements BaseContract.BasePresenter {
         LoginManager.getInstance().registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                fetchFacebookUserData(APIUtils.FACEBOOK_ID, loginResult.getAccessToken());
                 Log.d("facebook", loginResult.getAccessToken().getToken());
                 mActivity.showMessage("Successfully logged in Facebook");
-                authorization(APIUtils.FACEBOOK_ID, loginResult.getAccessToken().getToken());
-                setAccount(loginResult.getAccessToken().getToken(), APIUtils.FACEBOOK_ID);
+
             }
 
             @Override
             public void onCancel() {
-                mActivity.showMessage("denied");
+                mActivity.showMessage("denied Facebook");
             }
 
             @Override
@@ -82,30 +110,69 @@ public class MainPresenter implements BaseContract.BasePresenter {
         LoginManager.getInstance().logInWithReadPermissions(mActivity, Arrays.asList("public_profile"));
     }
 
-    public void authorization(final int socialWeb, String socialWebToken){
-        Disposable authorization = mAPIUtils.singIn(socialWeb, socialWebToken)
+    private void fetchFacebookUserData(final int socialWebId, AccessToken accessToken) {
+        GraphRequest request = GraphRequest.newMeRequest(
+                accessToken,
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(
+                            JSONObject object,
+                            GraphResponse response) {
+                        Log.d("Response", object.toString());
+                        sendNewUser(socialWebId, object);
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,picture,link,birthday,gender,age_range,hometown");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+    private void twitterInit(){
+        twitterAuthClient = new TwitterAuthClient();
+    }
+
+    public void twitterLogin(){
+        twitterAuthClient.authorize(mActivity, new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                Log.d("twitter", result.data.getAuthToken().token);
+                mActivity.showMessage("Successfully logged in Twitter");
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                mActivity.showMessage("error Twitter");
+                exception.printStackTrace();
+            }
+        });
+    }
+
+    private void sendNewUser(final int socialWebId, final JSONObject data){
+        Disposable sendNewUser = mAPIUtils.sendNewUser(socialWebId, data)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver(){
                     @Override
                     public void onComplete() {
-                        Toast.makeText(mActivity.getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
+                        mActivity.showMessage("ok API");
+                        setAccount(socialWebId);
                         mActivity.startListActivity();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(mActivity.getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                        mActivity.showMessage("denied API");
+                        Log.d("error", e.getMessage());
                         e.printStackTrace();
                     }
                 });
-        mDisposable.add(authorization);
+        mDisposable.add(sendNewUser);
     }
 
-    private void setAccount(String token, int socialWeb){
+    private void setAccount(int socialWeb){
         SharedPreferences activityPreferences = mActivity.getSharedPreferences("Who", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = activityPreferences.edit();
-        editor.putString("token", token);
         editor.putInt("socialWeb", socialWeb);
         editor.commit();
     }

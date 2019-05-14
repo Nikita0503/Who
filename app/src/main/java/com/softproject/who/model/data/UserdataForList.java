@@ -3,7 +3,7 @@ package com.softproject.who.model.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Userdata {
+public class UserdataForList {
     public boolean isHidden;
     @SerializedName("id")
     @Expose

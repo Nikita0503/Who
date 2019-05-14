@@ -3,18 +3,20 @@ package com.softproject.who.model.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class AuthData {
+import org.json.JSONObject;
 
-    @SerializedName("token")
+public class UserdataForSend {
+
+    @SerializedName("data")
     @Expose
-    public String token;
+    public JSONObject data;
     @SerializedName("social")
     @Expose
     public int social;
 
 
-    public AuthData(int social, String token) {
+    public UserdataForSend(int social, JSONObject data) {
         this.social = social;
-        this.token = token;
+        this.data = data;
     }
 }

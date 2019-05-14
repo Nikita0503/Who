@@ -1,13 +1,6 @@
 package com.softproject.who.list;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,10 +11,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.softproject.who.R;
-import com.softproject.who.model.data.Userdata;
+import com.softproject.who.model.data.UserdataForList;
 import com.softproject.who.model.APIUtils;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
 
@@ -29,10 +20,10 @@ import java.util.ArrayList;
 public class UsersListAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
-    private ArrayList<Userdata> mUsers;
+    private ArrayList<UserdataForList> mUsers;
 
     public UsersListAdapter(Context context) {
-        mUsers = new ArrayList<Userdata>();
+        mUsers = new ArrayList<UserdataForList>();
         mContext = context;
     }
 
@@ -96,7 +87,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         return mUsers.size();
     }
 
-    public void addUsers(ArrayList<Userdata> users){
+    public void addUsers(ArrayList<UserdataForList> users){
         mUsers.addAll(users);
         notifyDataSetChanged();
     }

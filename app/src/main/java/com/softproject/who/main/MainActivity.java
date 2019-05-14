@@ -21,6 +21,7 @@ import com.facebook.login.widget.LoginButton;
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
 import com.softproject.who.list.ListActivity;
+import com.twitter.sdk.android.core.Twitter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -30,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements BaseContract.BaseView {
+public class MainActivity extends AppCompatActivity implements BaseContract.BaseView, AuthenticationListener{
 
     private MainPresenter mPresenter;
 
@@ -39,13 +40,25 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
        mPresenter.facebookLogin();
    }
 
+   @OnClick(R.id.imageViewTwitter)
+   void onClickTwitter() {
+       mPresenter.twitterLogin();
+   }
+
+   @OnClick(R.id.imageViewInstagram)
+   void onClickInstagram() {
+       AuthenticationDialog dialog = new AuthenticationDialog(this, this);
+       dialog.setCancelable(true);
+       dialog.show();
+   }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        Twitter.initialize(this);
         mPresenter = new MainPresenter(this);
-
     }
 
     @Override
@@ -62,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mPresenter.facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+        //mPresenter.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -74,5 +88,10 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
     public void onStop(){
        super.onStop();
        mPresenter.onStop();
+    }
+
+    @Override
+    public void onCodeReceived(String authToken) {
+        Log.d("token", authToken);
     }
 }
