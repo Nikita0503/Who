@@ -11,27 +11,21 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.softproject.who.R;
+import com.softproject.who.model.APIUtils;
 
 public class AuthenticationDialog extends Dialog {
-    private AuthenticationListener mListener;
     private Context mContext;
     private WebView mWebView;
+    private MainPresenter mPresenter;
 
     private String mUrl;
 
 
-    public AuthenticationDialog(@NonNull Context context, AuthenticationListener listener) {
+    public AuthenticationDialog(@NonNull Context context, MainPresenter presenter) {
         super(context);
         mContext = context;
-        mListener = listener;
-        //mUrl = context.getResources().getString(R.string.base_url)
-        //        +"oauth/authorize/?client_id="
-        //        +context.getResources().getString(R.string.instagram_client_id)
-        //        +"&redirect_uri="
-        //        +context.getResources().getString(R.string.redirect_url)
-        //        +"&response_type=token"
-        //        +"&display=touch&scope=public_content";
         mUrl = "https://api.instagram.com/oauth/authorize/?client_id=457d99f202524bac86f7c560a34f6927&redirect_uri=http://localhost/&response_type=token";
+        mPresenter = presenter;
         Log.d("insta", mUrl);
     }
 
@@ -64,7 +58,7 @@ public class AuthenticationDialog extends Dialog {
                     accessToken = uri.getEncodedFragment();
                     accessToken = accessToken.substring(accessToken.lastIndexOf("=")+1);
                     Log.d("access_token", accessToken);
-                    mListener.onCodeReceived(accessToken);
+                    mPresenter.fetchInstagramUserData(APIUtils.INSTAGRAM_ID, accessToken);
                     dismiss();
                 }else if(url.contains("?error")){
                     Log.d("access_token", "error");

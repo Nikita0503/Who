@@ -25,9 +25,14 @@ import com.facebook.login.LoginResult;
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
 import com.softproject.who.model.APIUtils;
+import com.softproject.who.model.DataTransformer;
+import com.softproject.who.model.data.Userdata;
 import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
@@ -54,10 +59,12 @@ public class MainPresenter implements BaseContract.BasePresenter {
     private CompositeDisposable mDisposable;
     private MainActivity mActivity;
     private APIUtils mAPIUtils;
+    private DataTransformer mDataTransformer;
 
     public MainPresenter(MainActivity activity) {
         mActivity = activity;
         mAPIUtils = new APIUtils();
+        mDataTransformer = new DataTransformer(this);
     }
 
     @Override
@@ -84,6 +91,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
     }
 
     private void facebookInit(){
+        LoginManager.getInstance().logOut();
         facebookCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(facebookCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -115,11 +123,8 @@ public class MainPresenter implements BaseContract.BasePresenter {
                 accessToken,
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
-                    public void onCompleted(
-                            JSONObject object,
-                            GraphResponse response) {
-                        Log.d("Response", object.toString());
-                        sendNewUser(socialWebId, object);
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        mDataTransformer.transform(socialWebId, object);
                     }
                 });
         Bundle parameters = new Bundle();
@@ -129,6 +134,13 @@ public class MainPresenter implements BaseContract.BasePresenter {
     }
 
     private void twitterInit(){
+
+        TwitterConfig config = new TwitterConfig.Builder(mActivity)
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(mActivity.getResources().getString(R.string.twitter_consumer_key), mActivity.getResources().getString(R.string.twitter_consumer_secret)))
+                .debug(true)
+                .build();
+        Twitter.initialize(config);
         twitterAuthClient = new TwitterAuthClient();
     }
 
@@ -148,7 +160,25 @@ public class MainPresenter implements BaseContract.BasePresenter {
         });
     }
 
-    private void sendNewUser(final int socialWebId, final JSONObject data){
+    private void fetchTwitterUserData(){
+        //TODO:
+    }
+
+    public void instagramInit(){
+        //TODO: для каждой сети свой класс with interface
+    }
+
+    public void instagramLogin(){
+        AuthenticationDialog dialog = new AuthenticationDialog(mActivity.getApplicationContext(), this);
+        dialog.setCancelable(true);
+        dialog.show();
+    }
+
+    public void fetchInstagramUserData(final int socialWebId, String accessToken){
+        Log.d("token", accessToken);
+    }
+
+    private void sendNewUser(final int socialWebId, Userdata data){
         Disposable sendNewUser = mAPIUtils.sendNewUser(socialWebId, data)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -176,6 +206,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
         editor.putInt("socialWeb", socialWeb);
         editor.commit();
     }
+
 
     @Override
     public void onStop() {

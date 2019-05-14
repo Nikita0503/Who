@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements BaseContract.BaseView, AuthenticationListener{
+public class MainActivity extends AppCompatActivity implements BaseContract.BaseView{
 
     private MainPresenter mPresenter;
 
@@ -47,9 +47,7 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
 
    @OnClick(R.id.imageViewInstagram)
    void onClickInstagram() {
-       AuthenticationDialog dialog = new AuthenticationDialog(this, this);
-       dialog.setCancelable(true);
-       dialog.show();
+       mPresenter.instagramLogin();
    }
 
     @Override
@@ -57,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Twitter.initialize(this);
         mPresenter = new MainPresenter(this);
     }
 
@@ -74,8 +71,8 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mPresenter.facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
-        //mPresenter.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
+        //mPresenter.facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+        mPresenter.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -90,8 +87,5 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
        mPresenter.onStop();
     }
 
-    @Override
-    public void onCodeReceived(String authToken) {
-        Log.d("token", authToken);
-    }
+
 }

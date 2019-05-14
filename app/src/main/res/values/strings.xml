@@ -8,4 +8,6 @@
     <string name="instagram_client_id">457d99f202524bac86f7c560a34f6927</string>
     <string name="instagram_client_secret">d2277dc6bb26479c952e28b7d07f945b</string>
 
+    <string name="twitter_consumer_key">Yy6r3n99Qn8TGbmHpa3egkYcZ</string>
+    <string name="twitter_consumer_secret">lw14wJYu0DOYxfppIOaTdg9QUSK6688yCnse3b08e3piUcJLpj</string>
 </resources>

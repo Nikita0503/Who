@@ -1,7 +1,7 @@
 package com.softproject.who.model;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import com.softproject.who.model.data.UserdataForSend;
+import com.softproject.who.model.data.Userdata;
 import com.softproject.who.model.data.UserdataForList;
 
 import org.json.JSONObject;
@@ -17,14 +17,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class APIUtils {
 
     public static final int FACEBOOK_ID = 1;
+    public static final int TWITTER_ID = 2;
+    public static final int INSTAGRAM_ID = 3;
     public static final String BASE_URL = "http://ec2-54-191-215-22.us-west-2.compute.amazonaws.com/api/";
     public static final String TOKEN = "token bbd674b17c9a13586d4729f28a5986d69076bf92";
 
-    public Completable sendNewUser(int socialWebId, JSONObject data){
+    public Completable sendNewUser(int socialWebId, Userdata data){
         Retrofit retrofit = getClient(BASE_URL);
         APIService apiService = retrofit.create(APIService.class);
-        HashMap<String, Object> map = new HashMap<>();
-        return apiService.sendNewUser(TOKEN, new UserdataForSend(socialWebId, data));
+
+        return apiService.sendNewUser(TOKEN, new Userdata(socialWebId));
     }
 
     public Single<ArrayList<UserdataForList>> getUsers(){
