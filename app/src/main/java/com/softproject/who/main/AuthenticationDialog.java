@@ -24,13 +24,15 @@ public class AuthenticationDialog extends Dialog {
         super(context);
         mContext = context;
         mListener = listener;
-        mUrl = context.getResources().getString(R.string.base_url)
-                +"oauth/authorize/?client_id="
-                +context.getResources().getString(R.string.instagram_client_id)
-                +"&redirect_uri="
-                +context.getResources().getString(R.string.redirect_url)
-                +"&response_type=token"
-                +"&display=touch&scope=public_content";
+        //mUrl = context.getResources().getString(R.string.base_url)
+        //        +"oauth/authorize/?client_id="
+        //        +context.getResources().getString(R.string.instagram_client_id)
+        //        +"&redirect_uri="
+        //        +context.getResources().getString(R.string.redirect_url)
+        //        +"&response_type=token"
+        //        +"&display=touch&scope=public_content";
+        mUrl = "https://api.instagram.com/oauth/authorize/?client_id=457d99f202524bac86f7c560a34f6927&redirect_uri=http://localhost/&response_type=token";
+        Log.d("insta", mUrl);
     }
 
     @Override
@@ -42,6 +44,7 @@ public class AuthenticationDialog extends Dialog {
 
     private void initializeWebView(){
         mWebView = (WebView) findViewById(R.id.webView);
+        mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl(mUrl);
         mWebView.setWebViewClient(new WebViewClient(){
 
