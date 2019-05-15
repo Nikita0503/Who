@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.softproject.who.BaseContract;
 import com.softproject.who.model.APIUtils;
-import com.softproject.who.model.data.UserdataForList;
+import com.softproject.who.model.data.Userdata;
 
 import java.util.ArrayList;
 
@@ -35,9 +35,9 @@ public class ListPresenter implements BaseContract.BasePresenter {
         Disposable newUsers = mAPIUtils.getUsers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<ArrayList<UserdataForList>>() {
+                .subscribeWith(new DisposableSingleObserver<ArrayList<Userdata>>() {
                     @Override
-                    public void onSuccess(ArrayList<UserdataForList> users) {
+                    public void onSuccess(ArrayList<Userdata> users) {
                         Log.d("Users", "Users count = " + users.size());
                         mActivity.addUsers(users);
                     }

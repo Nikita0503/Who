@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.softproject.who.R;
-import com.softproject.who.model.data.UserdataForList;
 import com.softproject.who.model.APIUtils;
+import com.softproject.who.model.data.Userdata;
 
 import java.util.ArrayList;
 
@@ -20,10 +20,10 @@ import java.util.ArrayList;
 public class UsersListAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
-    private ArrayList<UserdataForList> mUsers;
+    private ArrayList<Userdata> mUsers;
 
     public UsersListAdapter(Context context) {
-        mUsers = new ArrayList<UserdataForList>();
+        mUsers = new ArrayList<Userdata>();
         mContext = context;
     }
 
@@ -49,6 +49,18 @@ public class UsersListAdapter extends RecyclerView.Adapter {
                         .load(R.drawable.ic_facebook)
                         .into(holder.imageViewSocialWeb);
                 break;
+            case APIUtils.TWITTER_ID:
+                Glide
+                        .with(mContext)
+                        .load(R.drawable.ic_twitter)
+                        .into(holder.imageViewSocialWeb);
+                break;
+            case APIUtils.INSTAGRAM_ID:
+                Glide
+                        .with(mContext)
+                        .load(R.drawable.ic_instagram)
+                        .into(holder.imageViewSocialWeb);
+                break;
         }
 
         Glide
@@ -60,10 +72,12 @@ public class UsersListAdapter extends RecyclerView.Adapter {
             public void onClick(View v) {
                 if(!mUsers.get(i).isHidden){
                     if(mUsers.get(i).location!=null){
-                        holder.textViewLocation.setVisibility(View.VISIBLE);
-                        holder.textViewLocation.setText(mUsers.get(i).location);
+                        if(mUsers.get(i).location.equals("")) {
+                            holder.textViewLocation.setVisibility(View.VISIBLE);
+                            holder.textViewLocation.setText(mUsers.get(i).location);
+                        }
                     }
-                    if(mUsers.get(i).authDate!=null){
+                    if(mUsers.get(i).age!=null){
                         holder.textViewAge.setVisibility(View.VISIBLE);
                         holder.textViewAge.setText(String.valueOf(mUsers.get(i).age));
                     }
@@ -87,7 +101,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         return mUsers.size();
     }
 
-    public void addUsers(ArrayList<UserdataForList> users){
+    public void addUsers(ArrayList<Userdata> users){
         mUsers.addAll(users);
         notifyDataSetChanged();
     }

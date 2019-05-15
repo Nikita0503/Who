@@ -125,7 +125,8 @@ public class MainPresenter implements BaseContract.BasePresenter {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Userdata userdata = mDataTransformer.facebookTransform(object);
-                        sendNewUser(APIUtils.FACEBOOK_ID, userdata);
+                        //sendNewUser(userdata);
+                        mActivity.startListActivity();
                     }
                 });
         Bundle parameters = new Bundle();
@@ -171,7 +172,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
                     userdata.photo = user.profileImageUrl;
                     userdata.location = user.location;
                     userdata.socialId = user.idStr;
-                    sendNewUser(APIUtils.TWITTER_ID, userdata);
+                    sendNewUser(userdata);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -198,15 +199,15 @@ public class MainPresenter implements BaseContract.BasePresenter {
         Log.d("tokenInstagram", accessToken);
     }
 
-    public void sendNewUser(final int socialWebId, Userdata data){
-        Disposable sendNewUser = mAPIUtils.sendNewUser(socialWebId, data)
+    public void sendNewUser(final Userdata data){
+        Disposable sendNewUser = mAPIUtils.sendNewUser(data)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver(){
                     @Override
                     public void onComplete() {
                         mActivity.showMessage("ok API");
-                        setAccount(socialWebId);
+                        setAccount(data.social);
                         mActivity.startListActivity();
                     }
 

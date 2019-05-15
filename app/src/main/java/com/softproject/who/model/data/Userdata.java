@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import org.json.JSONObject;
 
 public class Userdata {
+    public boolean isHidden;
     @SerializedName("name")
     @Expose
     public String name;

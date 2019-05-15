@@ -22,6 +22,11 @@ public class DataTransformer {
 
 
     public Userdata facebookTransform(JSONObject jsonObject){
+        try {
+            Log.d("FACEBOOK_USER", jsonObject.toString(4));
+        }catch (Exception c){
+
+        }
         Userdata userdata = new Userdata(APIUtils.FACEBOOK_ID);
         Iterator<String> keys = jsonObject.keys();
         while (keys.hasNext()) {
@@ -62,6 +67,7 @@ public class DataTransformer {
                 e.printStackTrace();
             }
         }
+
         return userdata;
     }
 }

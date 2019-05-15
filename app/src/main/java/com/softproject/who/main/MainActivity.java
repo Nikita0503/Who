@@ -71,8 +71,12 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //mPresenter.facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
-        mPresenter.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==64206){
+            mPresenter.facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+        if(requestCode==140){
+            mPresenter.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 

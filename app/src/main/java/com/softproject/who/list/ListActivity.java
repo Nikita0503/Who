@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
-import com.softproject.who.model.data.UserdataForList;
+import com.softproject.who.model.data.Userdata;
 
 import java.util.ArrayList;
 
@@ -46,7 +46,7 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
         mPresenter.getUsers();
     }
 
-    public void addUsers(ArrayList<UserdataForList> users){
+    public void addUsers(ArrayList<Userdata> users){
         mAdapter.addUsers(users);
     }
 
