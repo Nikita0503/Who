@@ -26,7 +26,6 @@ public class AuthenticationDialog extends Dialog {
         mContext = context;
         mUrl = "https://api.instagram.com/oauth/authorize/?client_id=457d99f202524bac86f7c560a34f6927&redirect_uri=http://localhost/&response_type=token";
         mPresenter = presenter;
-        Log.d("insta", mUrl);
     }
 
     @Override
@@ -57,11 +56,8 @@ public class AuthenticationDialog extends Dialog {
                     Uri uri = Uri.parse(url);
                     accessToken = uri.getEncodedFragment();
                     accessToken = accessToken.substring(accessToken.lastIndexOf("=")+1);
-                    Log.d("access_token", accessToken);
                     mPresenter.fetchInstagramUserData(APIUtils.INSTAGRAM_ID, accessToken);
                     dismiss();
-                }else if(url.contains("?error")){
-                    Log.d("access_token", "error");
                 }
             }
         });

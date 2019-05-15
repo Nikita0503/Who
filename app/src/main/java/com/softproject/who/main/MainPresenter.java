@@ -31,6 +31,7 @@ import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
@@ -39,6 +40,7 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.AuthHandler;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.core.models.User;
 
 import org.json.JSONObject;
 
@@ -97,9 +99,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 fetchFacebookUserData(APIUtils.FACEBOOK_ID, loginResult.getAccessToken());
-                Log.d("facebook", loginResult.getAccessToken().getToken());
                 mActivity.showMessage("Successfully logged in Facebook");
-
             }
 
             @Override
@@ -124,7 +124,8 @@ public class MainPresenter implements BaseContract.BasePresenter {
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
-                        mDataTransformer.transform(socialWebId, object);
+                        Userdata userdata = mDataTransformer.facebookTransform(object);
+                        sendNewUser(APIUtils.FACEBOOK_ID, userdata);
                     }
                 });
         Bundle parameters = new Bundle();
@@ -134,7 +135,6 @@ public class MainPresenter implements BaseContract.BasePresenter {
     }
 
     private void twitterInit(){
-
         TwitterConfig config = new TwitterConfig.Builder(mActivity)
                 .logger(new DefaultLogger(Log.DEBUG))
                 .twitterAuthConfig(new TwitterAuthConfig(mActivity.getResources().getString(R.string.twitter_consumer_key), mActivity.getResources().getString(R.string.twitter_consumer_secret)))
@@ -148,20 +148,40 @@ public class MainPresenter implements BaseContract.BasePresenter {
         twitterAuthClient.authorize(mActivity, new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                Log.d("twitter", result.data.getAuthToken().token);
+                fetchTwitterUserData(result.data);
                 mActivity.showMessage("Successfully logged in Twitter");
             }
 
             @Override
             public void failure(TwitterException exception) {
-                mActivity.showMessage("error Twitter");
+                mActivity.showMessage("denied Twitter");
                 exception.printStackTrace();
             }
         });
     }
 
-    private void fetchTwitterUserData(){
-        //TODO:
+    private void fetchTwitterUserData(TwitterSession twitterSession){
+        TwitterCore.getInstance().getApiClient().getAccountService().verifyCredentials(true, false, true).enqueue(new Callback<User>() {
+            @Override
+            public void success(Result<User> userResult) {
+                try {
+                    User user = userResult.data;
+                    Userdata userdata = new Userdata(APIUtils.TWITTER_ID);
+                    userdata.name = user.name;
+                    userdata.photo = user.profileImageUrl;
+                    userdata.location = user.location;
+                    userdata.socialId = user.idStr;
+                    sendNewUser(APIUtils.TWITTER_ID, userdata);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void failure(TwitterException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void instagramInit(){
@@ -169,16 +189,16 @@ public class MainPresenter implements BaseContract.BasePresenter {
     }
 
     public void instagramLogin(){
-        AuthenticationDialog dialog = new AuthenticationDialog(mActivity.getApplicationContext(), this);
+        AuthenticationDialog dialog = new AuthenticationDialog(mActivity, this);
         dialog.setCancelable(true);
         dialog.show();
     }
 
     public void fetchInstagramUserData(final int socialWebId, String accessToken){
-        Log.d("token", accessToken);
+        Log.d("tokenInstagram", accessToken);
     }
 
-    private void sendNewUser(final int socialWebId, Userdata data){
+    public void sendNewUser(final int socialWebId, Userdata data){
         Disposable sendNewUser = mAPIUtils.sendNewUser(socialWebId, data)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

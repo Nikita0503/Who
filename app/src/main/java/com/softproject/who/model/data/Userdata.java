@@ -20,7 +20,7 @@ public class Userdata {
     public Integer social;
     @SerializedName("social_id")
     @Expose
-    public Integer socialId;
+    public String socialId;
     @SerializedName("url")
     @Expose
     public String url;
@@ -34,7 +34,7 @@ public class Userdata {
     @Expose
     public String gender;
 
-    public Userdata(Integer socialId) {
-        this.socialId = socialId;
+    public Userdata(Integer social) {
+        this.social = social;
     }
 }
