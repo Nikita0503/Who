@@ -1,6 +1,10 @@
 package com.softproject.who.model;
 
 import com.softproject.who.model.data.Userdata;
+import com.softproject.who.model.data.instagram.InstagramData;
+import com.softproject.who.model.data.instagram.InstagramUserdata;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -10,6 +14,8 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface APIService {
 
@@ -18,4 +24,7 @@ public interface APIService {
 
     @GET("users")
     Single<ArrayList<Userdata>> getUsers();
+
+    @GET("users/self/?")
+    Single<InstagramData> getInstagramUserdata(@Query("access_token") String accessToken);
 }

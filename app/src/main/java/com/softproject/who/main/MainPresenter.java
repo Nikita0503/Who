@@ -1,17 +1,10 @@
 package com.softproject.who.main;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 
 import com.facebook.AccessToken;
@@ -24,33 +17,33 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
+import com.softproject.who.model.APIInstagramUtils;
 import com.softproject.who.model.APIUtils;
 import com.softproject.who.model.DataTransformer;
 import com.softproject.who.model.data.Userdata;
+import com.softproject.who.model.data.instagram.InstagramData;
+import com.softproject.who.model.data.instagram.InstagramUserdata;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.AuthHandler;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import com.twitter.sdk.android.core.models.User;
 
 import org.json.JSONObject;
 
 import java.util.Arrays;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -61,6 +54,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
     private CompositeDisposable mDisposable;
     private MainActivity mActivity;
     private APIUtils mAPIUtils;
+    private APIInstagramUtils mAPIInstagramUtils;
     private DataTransformer mDataTransformer;
 
     public MainPresenter(MainActivity activity) {
@@ -77,6 +71,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
         }else{
             facebookInit();
             twitterInit();
+            instagramInit();
         }
     }
 
@@ -125,8 +120,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         Userdata userdata = mDataTransformer.facebookTransform(object);
-                        //sendNewUser(userdata);
-                        mActivity.startListActivity();
+                        sendNewUser(userdata);
                     }
                 });
         Bundle parameters = new Bundle();
@@ -186,7 +180,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
     }
 
     public void instagramInit(){
-        //TODO: для каждой сети свой класс with interface
+        mAPIInstagramUtils = new APIInstagramUtils();
     }
 
     public void instagramLogin(){
@@ -195,25 +189,44 @@ public class MainPresenter implements BaseContract.BasePresenter {
         dialog.show();
     }
 
-    public void fetchInstagramUserData(final int socialWebId, String accessToken){
-        Log.d("tokenInstagram", accessToken);
+    public void fetchInstagramUserData(String accessToken){
+        Log.d("INSTAGRAM", accessToken);
+        Disposable instagramUserdata = mAPIInstagramUtils.getInstagramUserinfo(accessToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<InstagramData>() {
+                    @Override
+                    public void onSuccess(InstagramData value) {
+                        InstagramUserdata instagramUserdata= value.data;
+                        Userdata userdata = mDataTransformer.instagramTransform(instagramUserdata);
+                        sendNewUser(userdata);
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
+        mDisposable.add(instagramUserdata);
     }
 
-    public void sendNewUser(final Userdata data){
-        Disposable sendNewUser = mAPIUtils.sendNewUser(data)
+    public void sendNewUser(final Userdata userdata){
+        Disposable sendNewUser = mAPIUtils.sendNewUser(userdata)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableCompletableObserver(){
                     @Override
                     public void onComplete() {
                         mActivity.showMessage("ok API");
-                        setAccount(data.social);
+                        setAccount(userdata.social);
                         mActivity.startListActivity();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         mActivity.showMessage("denied API");
+                        mActivity.startListActivity();
                         Log.d("error", e.getMessage());
                         e.printStackTrace();
                     }

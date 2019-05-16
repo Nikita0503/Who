@@ -56,7 +56,7 @@ public class AuthenticationDialog extends Dialog {
                     Uri uri = Uri.parse(url);
                     accessToken = uri.getEncodedFragment();
                     accessToken = accessToken.substring(accessToken.lastIndexOf("=")+1);
-                    mPresenter.fetchInstagramUserData(APIUtils.INSTAGRAM_ID, accessToken);
+                    mPresenter.fetchInstagramUserData(accessToken);
                     dismiss();
                 }
             }

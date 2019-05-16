@@ -23,14 +23,6 @@ public class APIUtils {
     public Completable sendNewUser(Userdata userdata){
         Retrofit retrofit = getClient(BASE_URL);
         APIService apiService = retrofit.create(APIService.class);
-        Log.d("FACEBOOK_USER", "name = " + userdata.name);
-        Log.d("FACEBOOK_USER", "photo = " + userdata.photo);
-        Log.d("FACEBOOK_USER", "location = " + userdata.location);
-        Log.d("FACEBOOK_USER", "socialId = " + userdata.socialId);
-        Log.d("FACEBOOK_USER", "url = " + userdata.url);
-        Log.d("FACEBOOK_USER", "age = " + userdata.age);
-        Log.d("FACEBOOK_USER", "gender = " + userdata.gender);
-        Log.d("FACEBOOK_USER", "birthday = " + userdata.birthday);
         return apiService.sendNewUser(TOKEN, userdata);
     }
 

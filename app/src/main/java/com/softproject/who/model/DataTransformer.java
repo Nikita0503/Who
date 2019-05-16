@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import com.softproject.who.model.APIUtils;
 import com.softproject.who.model.data.Userdata;
+import com.softproject.who.model.data.instagram.InstagramUserdata;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,11 +23,6 @@ public class DataTransformer {
 
 
     public Userdata facebookTransform(JSONObject jsonObject){
-        try {
-            Log.d("FACEBOOK_USER", jsonObject.toString(4));
-        }catch (Exception c){
-
-        }
         Userdata userdata = new Userdata(APIUtils.FACEBOOK_ID);
         Iterator<String> keys = jsonObject.keys();
         while (keys.hasNext()) {
@@ -68,6 +64,14 @@ public class DataTransformer {
             }
         }
 
+        return userdata;
+    }
+
+    public Userdata instagramTransform(InstagramUserdata instagramUserdata){
+        Userdata userdata = new Userdata(APIUtils.INSTAGRAM_ID);
+        userdata.name = instagramUserdata.fullName;
+        userdata.photo = instagramUserdata.profilePicture;
+        userdata.socialId = instagramUserdata.id;
         return userdata;
     }
 }

@@ -3,6 +3,7 @@ package com.softproject.who.list;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
         final UserViewHolder holder = (UserViewHolder) viewHolder;
+
         //holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
         holder.textViewNumber.setText(String.valueOf(i+1));
         holder.textViewUsername.setText(mUsers.get(i).name);
@@ -71,25 +73,26 @@ public class UsersListAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 if(!mUsers.get(i).isHidden){
+                    holder.textViewDescrption.setVisibility(View.VISIBLE);
+                    String description = "";
                     if(mUsers.get(i).location!=null){
-                        if(mUsers.get(i).location.equals("")) {
-                            holder.textViewLocation.setVisibility(View.VISIBLE);
-                            holder.textViewLocation.setText(mUsers.get(i).location);
+                        if(!mUsers.get(i).location.equals("")) {
+                            description += "location: " + mUsers.get(i).location + "\n";
                         }
                     }
                     if(mUsers.get(i).age!=null){
-                        holder.textViewAge.setVisibility(View.VISIBLE);
-                        holder.textViewAge.setText(String.valueOf(mUsers.get(i).age));
+                        description += "age: " + mUsers.get(i).age + "\n";
                     }
                     if(mUsers.get(i).gender!=null){
-                        holder.textViewGender.setVisibility(View.VISIBLE);
-                        holder.textViewGender.setText(String.valueOf(mUsers.get(i).gender));
+                        description += mUsers.get(i).gender + "\n";
                     }
+                    holder.textViewDescrption.setText(description);
                     mUsers.get(i).isHidden = true;
+                    if(description.equals("")){
+                        holder.textViewDescrption.setVisibility(View.GONE);
+                    }
                 }else{
-                    holder.textViewLocation.setVisibility(View.GONE);
-                    holder.textViewAge.setVisibility(View.GONE);
-                    holder.textViewGender.setVisibility(View.GONE);
+                    holder.textViewDescrption.setVisibility(View.GONE);
                     mUsers.get(i).isHidden = false;
                 }
             }
@@ -110,9 +113,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
 
         TextView textViewNumber;
         TextView textViewUsername;
-        TextView textViewLocation;
-        TextView textViewAge;
-        TextView textViewGender;
+        TextView textViewDescrption;
         ImageView imageViewAvatar;
         ImageView imageViewSocialWeb;
 
@@ -120,9 +121,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
             super(itemView);
             textViewNumber = (TextView) itemView.findViewById(R.id.textViewNumber);
             textViewUsername = (TextView) itemView.findViewById(R.id.textViewUsername);
-            textViewLocation = (TextView) itemView.findViewById(R.id.textViewLocation);
-            textViewAge = (TextView) itemView.findViewById(R.id.textViewAge);
-            textViewGender = (TextView) itemView.findViewById(R.id.textViewGender);
+            textViewDescrption = (TextView) itemView.findViewById(R.id.textViewDescription);
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.imageViewAvatar);
             imageViewSocialWeb = (ImageView) itemView.findViewById(R.id.imageViewSocialWeb);
         }
