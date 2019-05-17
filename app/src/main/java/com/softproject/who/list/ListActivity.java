@@ -40,7 +40,7 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
     }
 
     private void fetchUsers(){
-        mAdapter = new UsersListAdapter(getApplicationContext());
+        mAdapter = new UsersListAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(mAdapter);
         mPresenter.getUsers();

@@ -1,6 +1,8 @@
 package com.softproject.who.list;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,12 +22,12 @@ import java.util.ArrayList;
 
 public class UsersListAdapter extends RecyclerView.Adapter {
 
-    private Context mContext;
+    private ListActivity mActivity;
     private ArrayList<Userdata> mUsers;
 
-    public UsersListAdapter(Context context) {
+    public UsersListAdapter(ListActivity activity) {
         mUsers = new ArrayList<Userdata>();
-        mContext = context;
+        mActivity = activity;
     }
 
     @NonNull
@@ -40,33 +42,32 @@ public class UsersListAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
         final UserViewHolder holder = (UserViewHolder) viewHolder;
-
         //holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
         holder.textViewNumber.setText(String.valueOf(i+1));
         holder.textViewUsername.setText(mUsers.get(i).name);
         switch (mUsers.get(i).social){
             case APIUtils.FACEBOOK_ID:
                 Glide
-                        .with(mContext)
+                        .with(mActivity.getApplicationContext())
                         .load(R.drawable.ic_facebook)
                         .into(holder.imageViewSocialWeb);
                 break;
             case APIUtils.TWITTER_ID:
                 Glide
-                        .with(mContext)
+                        .with(mActivity.getApplicationContext())
                         .load(R.drawable.ic_twitter)
                         .into(holder.imageViewSocialWeb);
                 break;
             case APIUtils.INSTAGRAM_ID:
                 Glide
-                        .with(mContext)
+                        .with(mActivity.getApplicationContext())
                         .load(R.drawable.ic_instagram)
                         .into(holder.imageViewSocialWeb);
                 break;
         }
 
         Glide
-                .with(mContext)
+                .with(mActivity.getApplicationContext())
                 .load(mUsers.get(i).photo)
                 .into(holder.imageViewAvatar);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +98,23 @@ public class UsersListAdapter extends RecyclerView.Adapter {
                 }
             }
         });
+        holder.imageViewSocialWeb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent facebookIntent = getOpenFacebookIntent(i);
+                mActivity.startActivity(facebookIntent);
+            }
+        });
+    }
+
+    public Intent getOpenFacebookIntent(int i) {
+
+        try {
+            mActivity.getPackageManager().getPackageInfo("com.facebook.katana", 0);
+            return new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/426253597411506"));
+        } catch (Exception e) {
+            return new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/"+mUsers.get(i).name));
+        }
     }
 
     @Override

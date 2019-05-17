@@ -34,7 +34,14 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.core.models.User;
+import com.vk.api.sdk.VK;
+import com.vk.api.sdk.auth.VKAccessToken;
+import com.vk.api.sdk.auth.VKAuthCallback;
+import com.vk.api.sdk.auth.VKScope;
+import com.vk.api.sdk.requests.VKRequest;
+import com.vk.api.sdk.utils.VKUtils;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -51,6 +58,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
 
     public CallbackManager facebookCallbackManager;
     public TwitterAuthClient twitterAuthClient;
+    public VKAuthCallback vkAuthCallback;
     private CompositeDisposable mDisposable;
     private MainActivity mActivity;
     private APIUtils mAPIUtils;
@@ -72,14 +80,15 @@ public class MainPresenter implements BaseContract.BasePresenter {
             facebookInit();
             twitterInit();
             instagramInit();
+            vkInit();
         }
     }
 
     private boolean checkIsLogged(){
         SharedPreferences sp = mActivity.getSharedPreferences("Who",
                 Context.MODE_PRIVATE);
-        String token = sp.getString("token", "");
-        if(!token.equals("")){
+        int socialWeb = sp.getInt("socialWeb", 0);
+        if(socialWeb != 0){
             return true;
         }else{
             return false;
@@ -211,7 +220,31 @@ public class MainPresenter implements BaseContract.BasePresenter {
         mDisposable.add(instagramUserdata);
     }
 
+    private void vkInit(){
+        VK.initialize(mActivity);
+    }
+
+    public void vkLogin(){
+        vkAuthCallback = new VKAuthCallback() {
+            @Override
+            public void onLogin(@NotNull VKAccessToken vkAccessToken) {
+                Log.d("VK", vkAccessToken.getAccessToken());
+                fetchVkUserdata(vkAccessToken.getUserId());
+            }
+
+            @Override
+            public void onLoginFailed(int i) {
+                Log.d("VK", "fail: " + i);
+            }
+        };
+        VK.login(mActivity);
+    }
+
+    private void fetchVkUserdata(int userId){
+    }
+
     public void sendNewUser(final Userdata userdata){
+        //setAccount(userdata.social);
         Disposable sendNewUser = mAPIUtils.sendNewUser(userdata)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -219,7 +252,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
                     @Override
                     public void onComplete() {
                         mActivity.showMessage("ok API");
-                        setAccount(userdata.social);
+
                         mActivity.startListActivity();
                     }
 

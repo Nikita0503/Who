@@ -38,6 +38,8 @@ public class AuthenticationDialog extends Dialog {
     private void initializeWebView(){
         mWebView = (WebView) findViewById(R.id.webView);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.setVerticalScrollBarEnabled(true);
+        mWebView.setHorizontalScrollBarEnabled(true);
         mWebView.loadUrl(mUrl);
         mWebView.setWebViewClient(new WebViewClient(){
 

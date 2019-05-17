@@ -10,4 +10,6 @@
 
     <string name="twitter_consumer_key">Yy6r3n99Qn8TGbmHpa3egkYcZ</string>
     <string name="twitter_consumer_secret">lw14wJYu0DOYxfppIOaTdg9QUSK6688yCnse3b08e3piUcJLpj</string>
+
+    <integer name="com_vk_sdk_AppId">6987361</integer>
 </resources>

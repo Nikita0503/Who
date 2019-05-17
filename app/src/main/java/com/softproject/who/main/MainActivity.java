@@ -22,6 +22,12 @@ import com.softproject.who.BaseContract;
 import com.softproject.who.R;
 import com.softproject.who.list.ListActivity;
 import com.twitter.sdk.android.core.Twitter;
+import com.vk.api.sdk.VK;
+import com.vk.api.sdk.auth.VKAccessToken;
+import com.vk.api.sdk.auth.VKAuthCallback;
+import com.vk.api.sdk.utils.VKUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,11 +56,18 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
        mPresenter.instagramLogin();
    }
 
+   @OnClick(R.id.imageViewVk)
+   void onClickVk(){
+       mPresenter.vkLogin();
+   }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        //String[] fingerprints = VKUtils.getCertificateFingerprint(this, this.getPackageName());
+        //Log.d("VK", fingerprints[0]);
         mPresenter = new MainPresenter(this);
     }
 
@@ -76,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         }
         if(requestCode==140){
             mPresenter.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
+        }
+        if(requestCode==282) {
+            VK.onActivityResult(requestCode, resultCode, data, mPresenter.vkAuthCallback);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

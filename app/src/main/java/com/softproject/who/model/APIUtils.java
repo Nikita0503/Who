@@ -18,7 +18,7 @@ public class APIUtils {
     public static final int TWITTER_ID = 2;
     public static final int INSTAGRAM_ID = 3;
     public static final String BASE_URL = "http://34.214.73.44:8000/api/";
-    public static final String TOKEN = "token bbd674b17c9a13586d4729f28a5986d69076bf92";
+    public static final String TOKEN = "token a1372269eca148a1412f45cb4ca7fdc88b5d15e8";
 
     public Completable sendNewUser(Userdata userdata){
         Retrofit retrofit = getClient(BASE_URL);
