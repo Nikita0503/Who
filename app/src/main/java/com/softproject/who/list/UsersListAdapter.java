@@ -111,8 +111,10 @@ public class UsersListAdapter extends RecyclerView.Adapter {
             public void onClick(View v) {
                 //Intent facebookIntent = getOpenFacebookIntent(i);
                 //mActivity.startActivity(facebookIntent);
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mUsers.get(i).url));
-                mActivity.startActivity(browserIntent);
+                if(mUsers.get(i).social!=APIUtils.FACEBOOK_ID) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mUsers.get(i).url));
+                    mActivity.startActivity(browserIntent);
+                }
             }
         });
     }
