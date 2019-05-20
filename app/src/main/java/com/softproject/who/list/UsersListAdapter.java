@@ -64,6 +64,12 @@ public class UsersListAdapter extends RecyclerView.Adapter {
                         .load(R.drawable.ic_instagram)
                         .into(holder.imageViewSocialWeb);
                 break;
+            case APIUtils.VK_ID:
+                Glide
+                        .with(mActivity.getApplicationContext())
+                        .load(R.drawable.ic_vkontakte)
+                        .into(holder.imageViewSocialWeb);
+                break;
         }
 
         Glide
@@ -83,6 +89,8 @@ public class UsersListAdapter extends RecyclerView.Adapter {
                     }
                     if(mUsers.get(i).age!=null){
                         description += "age: " + mUsers.get(i).age + "\n";
+                    }else if(mUsers.get(i).birthday!=null){
+                        description += "birthday: " + mUsers.get(i).birthday + "\n";
                     }
                     if(mUsers.get(i).gender!=null){
                         description += mUsers.get(i).gender + "\n";
@@ -101,8 +109,10 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         holder.imageViewSocialWeb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent facebookIntent = getOpenFacebookIntent(i);
-                mActivity.startActivity(facebookIntent);
+                //Intent facebookIntent = getOpenFacebookIntent(i);
+                //mActivity.startActivity(facebookIntent);
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mUsers.get(i).url));
+                mActivity.startActivity(browserIntent);
             }
         });
     }

@@ -27,4 +27,5 @@ public interface APIService {
 
     @GET("users/self/?")
     Single<InstagramData> getInstagramUserdata(@Query("access_token") String accessToken);
+
 }

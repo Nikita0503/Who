@@ -89,6 +89,7 @@ public class DataTransformer {
                         break;
                     case "id":
                         userdata.socialId = String.valueOf(value);
+                        userdata.url = "https://vk.com/id" + String.valueOf(value);
                         break;
                     case "sex":
                         String gender = String.valueOf(value);
@@ -117,6 +118,7 @@ public class DataTransformer {
         userdata.name = instagramUserdata.fullName;
         userdata.photo = instagramUserdata.profilePicture;
         userdata.socialId = instagramUserdata.id;
+        userdata.url = "https://www.instagram.com/" + instagramUserdata.username;
         return userdata;
     }
 }

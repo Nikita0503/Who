@@ -19,6 +19,7 @@ import com.softproject.who.BaseContract;
 import com.softproject.who.R;
 import com.softproject.who.model.APIInstagramUtils;
 import com.softproject.who.model.APIUtils;
+import com.softproject.who.model.APIVkUtils;
 import com.softproject.who.model.DataTransformer;
 import com.softproject.who.model.data.Userdata;
 import com.softproject.who.model.data.instagram.InstagramData;
@@ -42,6 +43,7 @@ import com.vk.api.sdk.requests.VKRequest;
 import com.vk.api.sdk.utils.VKUtils;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -63,6 +65,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
     private MainActivity mActivity;
     private APIUtils mAPIUtils;
     private APIInstagramUtils mAPIInstagramUtils;
+    private APIVkUtils mAPIVkUtils;
     private DataTransformer mDataTransformer;
 
     public MainPresenter(MainActivity activity) {
@@ -175,6 +178,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
                     userdata.photo = user.profileImageUrl;
                     userdata.location = user.location;
                     userdata.socialId = user.idStr;
+                    userdata.url = "https://twitter.com/" + user.screenName;
                     sendNewUser(userdata);
 
                 } catch (Exception e) {
@@ -222,6 +226,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
 
     private void vkInit(){
         VK.initialize(mActivity);
+        mAPIVkUtils = new APIVkUtils();
     }
 
     public void vkLogin(){
@@ -229,7 +234,7 @@ public class MainPresenter implements BaseContract.BasePresenter {
             @Override
             public void onLogin(@NotNull VKAccessToken vkAccessToken) {
                 Log.d("VK", vkAccessToken.getAccessToken());
-                fetchVkUserdata(vkAccessToken.getUserId());
+                fetchVkUserdata(String.valueOf(vkAccessToken.getUserId()), vkAccessToken.getAccessToken());
             }
 
             @Override
@@ -240,7 +245,27 @@ public class MainPresenter implements BaseContract.BasePresenter {
         VK.login(mActivity);
     }
 
-    private void fetchVkUserdata(int userId){
+    private void fetchVkUserdata(String userId, String token){
+        mAPIVkUtils.getVkUserinfo(userId, token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<JSONObject>() {
+                    @Override
+                    public void onSuccess(JSONObject vkUserdata) {
+                        try {
+                            Userdata userdata = mDataTransformer.vkTransform(vkUserdata);
+                            Log.d("VK", vkUserdata.toString(4));
+                            sendNewUser(userdata);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public void sendNewUser(final Userdata userdata){
