@@ -34,6 +34,9 @@ public class Userdata {
     @SerializedName("gender")
     @Expose
     public String gender;
+    @SerializedName("auth_date")
+    @Expose
+    public String authDate;
 
     public Userdata(Integer social) {
         this.social = social;

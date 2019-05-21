@@ -17,7 +17,11 @@ import com.softproject.who.R;
 import com.softproject.who.model.APIUtils;
 import com.softproject.who.model.data.Userdata;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 
 public class UsersListAdapter extends RecyclerView.Adapter {
@@ -45,6 +49,15 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         //holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
         holder.textViewNumber.setText(String.valueOf(i+1));
         holder.textViewUsername.setText(mUsers.get(i).name);
+        int difference = getDifferenceTime(mUsers.get(i).authDate);
+        if(difference == 0){
+            holder.textViewDaysAgo.setText("Today");
+        }else if(difference == 1){
+            holder.textViewDaysAgo.setText(difference + " day ago");
+        }else{
+            holder.textViewDaysAgo.setText(difference + " days ago");
+        }
+
         switch (mUsers.get(i).social){
             case APIUtils.FACEBOOK_ID:
                 Glide
@@ -140,11 +153,31 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
+    private int getDifferenceTime(String date) {
+        Date nowDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date itemDate = null;
+        try {
+            itemDate = dateFormat.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long milliseconds = getDateDiff(itemDate, nowDate,TimeUnit.MILLISECONDS);
+        int days = (int) (milliseconds / (24 * 60 * 60 * 1000));
+        return days;
+    }
+
+    private long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+    }
+
     public static class UserViewHolder extends RecyclerView.ViewHolder{
 
         TextView textViewNumber;
         TextView textViewUsername;
         TextView textViewDescrption;
+        TextView textViewDaysAgo;
         ImageView imageViewAvatar;
         ImageView imageViewSocialWeb;
 
@@ -153,6 +186,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
             textViewNumber = (TextView) itemView.findViewById(R.id.textViewNumber);
             textViewUsername = (TextView) itemView.findViewById(R.id.textViewUsername);
             textViewDescrption = (TextView) itemView.findViewById(R.id.textViewDescription);
+            textViewDaysAgo = (TextView) itemView.findViewById(R.id.textViewDaysAgo);
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.imageViewAvatar);
             imageViewSocialWeb = (ImageView) itemView.findViewById(R.id.imageViewSocialWeb);
         }
