@@ -4,7 +4,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
@@ -23,6 +29,8 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +38,27 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
         setContentView(R.layout.activity_list);
         ButterKnife.bind(this);
         mPresenter = new ListPresenter(this);
+        if(mToolbar != null){
+            setSupportActionBar(mToolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
+        final EditText editTextSearch = (EditText) mToolbar.findViewById(R.id.search_edit_text);
+        editTextSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //Do nothing
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                fetchUsers(editTextSearch.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //Do nothing
+            }
+        });
     }
 
     @Override
@@ -43,7 +72,14 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
         mAdapter = new UsersListAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(mAdapter);
-        mPresenter.getUsers();
+        mPresenter.getUsers("");
+    }
+
+    private void fetchUsers(String text){
+        mAdapter = new UsersListAdapter(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setAdapter(mAdapter);
+        mPresenter.getUsers(text);
     }
 
     public void addUsers(ArrayList<Userdata> users){

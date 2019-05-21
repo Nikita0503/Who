@@ -27,10 +27,14 @@ public class APIUtils {
         return apiService.sendNewUser(TOKEN, userdata);
     }
 
-    public Single<ArrayList<Userdata>> getUsers(){
+    public Single<ArrayList<Userdata>> getUsers(String text){
         Retrofit retrofit = getClient(BASE_URL);
         APIService apiService = retrofit.create(APIService.class);
-        return apiService.getUsers();
+        if(text.equals("")) {
+            return apiService.getUsers();
+        }else{
+            return apiService.getUsers(text);
+        }
     }
 
     public static Retrofit getClient(String baseUrl) {

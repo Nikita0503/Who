@@ -22,8 +22,11 @@ public interface APIService {
     @POST("users/")
     Completable sendNewUser(@Header("Authorization") String header, @Body Userdata userdata);
 
-    @GET("users")
+    @GET("users/?ordering=-auth_date")
     Single<ArrayList<Userdata>> getUsers();
+
+    @GET("users/?ordering=-auth_date")
+    Single<ArrayList<Userdata>> getUsers(@Query("search") String text);
 
     @GET("users/self/?")
     Single<InstagramData> getInstagramUserdata(@Query("access_token") String accessToken);

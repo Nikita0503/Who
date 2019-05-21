@@ -135,6 +135,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
     }
 
     public void addUsers(ArrayList<Userdata> users){
+        mUsers.clear();
         mUsers.addAll(users);
         notifyDataSetChanged();
     }

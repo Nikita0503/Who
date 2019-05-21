@@ -31,8 +31,8 @@ public class ListPresenter implements BaseContract.BasePresenter {
         mDisposable = new CompositeDisposable();
     }
 
-    public void getUsers(){
-        Disposable newUsers = mAPIUtils.getUsers()
+    public void getUsers(String text){
+        Disposable newUsers = mAPIUtils.getUsers(text)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<ArrayList<Userdata>>() {
@@ -49,6 +49,8 @@ public class ListPresenter implements BaseContract.BasePresenter {
                 });
         mDisposable.add(newUsers);
     }
+
+
 
     @Override
     public void onStop() {
