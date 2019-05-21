@@ -51,11 +51,11 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         holder.textViewUsername.setText(mUsers.get(i).name);
         int difference = getDifferenceTime(mUsers.get(i).authDate);
         if(difference == 0){
-            holder.textViewDaysAgo.setText("Today");
+            holder.textViewDaysAgo.setText(mActivity.getResources().getString(R.string.today));
         }else if(difference == 1){
-            holder.textViewDaysAgo.setText(difference + " day ago");
+            holder.textViewDaysAgo.setText(difference + " " + mActivity.getResources().getString(R.string.day_ago));
         }else{
-            holder.textViewDaysAgo.setText(difference + " days ago");
+            holder.textViewDaysAgo.setText(difference + " " + mActivity.getResources().getString(R.string.days_ago));
         }
 
         switch (mUsers.get(i).social){
