@@ -6,7 +6,11 @@ import com.google.gson.annotations.SerializedName;
 import org.json.JSONObject;
 
 public class Userdata {
+    public boolean isNew;
     public boolean isHidden;
+    @SerializedName("id")
+    @Expose
+    public Integer id;
     @SerializedName("name")
     @Expose
     public String name;

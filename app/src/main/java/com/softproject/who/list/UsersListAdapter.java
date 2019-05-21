@@ -49,6 +49,9 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         //holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
         holder.textViewNumber.setText(String.valueOf(i+1));
         holder.textViewUsername.setText(mUsers.get(i).name);
+        if(mUsers.get(i).isNew){
+            holder.textViewIsNew.setText(mActivity.getResources().getString(R.string.new_user));
+        }
         int difference = getDifferenceTime(mUsers.get(i).authDate);
         if(difference == 0){
             holder.textViewDaysAgo.setText(mActivity.getResources().getString(R.string.today));
@@ -178,6 +181,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         TextView textViewUsername;
         TextView textViewDescrption;
         TextView textViewDaysAgo;
+        TextView textViewIsNew;
         ImageView imageViewAvatar;
         ImageView imageViewSocialWeb;
 
@@ -187,6 +191,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
             textViewUsername = (TextView) itemView.findViewById(R.id.textViewUsername);
             textViewDescrption = (TextView) itemView.findViewById(R.id.textViewDescription);
             textViewDaysAgo = (TextView) itemView.findViewById(R.id.textViewDaysAgo);
+            textViewIsNew = (TextView) itemView.findViewById(R.id.textViewIsNew);
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.imageViewAvatar);
             imageViewSocialWeb = (ImageView) itemView.findViewById(R.id.imageViewSocialWeb);
         }

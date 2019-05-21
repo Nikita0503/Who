@@ -16,7 +16,7 @@
     <string name="today">Today</string>
     <string name="day_ago">day ago</string>
     <string name="days_ago">days ago</string>
-
+    <string name="new_user">New</string>
     <string name="description1">To view a list of people who have already downloaded Who? - Log in using any of the proposed social networks</string>
     <string name="description2">By logging in you agree to enter data about yourself (name, region, photo) to our list of downloaded</string>
 </resources>
