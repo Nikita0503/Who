@@ -79,8 +79,9 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         mPresenter.onStart();
     }
 
-    public void startListActivity(){
+    public void startListActivity(String socailId){
         Intent intent = new Intent(this, ListActivity.class);
+        intent.putExtra("socialId", socailId);
         startActivity(intent);
     }
 

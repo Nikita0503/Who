@@ -15,6 +15,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
 import com.softproject.who.model.APIInstagramUtils;
@@ -77,8 +78,9 @@ public class MainPresenter implements BaseContract.BasePresenter {
     @Override
     public void onStart() {
         mDisposable = new CompositeDisposable();
-        if(checkIsLogged()){
-            mActivity.startListActivity();
+        String socialId = checkIsLogged();
+        if(!socialId.equals("")){
+            mActivity.startListActivity(socialId);
         }else{
             facebookInit();
             twitterInit();
@@ -87,16 +89,11 @@ public class MainPresenter implements BaseContract.BasePresenter {
         }
     }
 
-    private boolean checkIsLogged(){
+    private String checkIsLogged(){
         SharedPreferences sp = mActivity.getSharedPreferences("Who",
                 Context.MODE_PRIVATE);
-        int socialWeb = sp.getInt("socialWeb", 0);
-        if(socialWeb != 0){
-            return true;
-        }else{
-            return false;
-        }
-
+        String socialWeb = sp.getString("socialWeb", "");
+        return socialWeb;
     }
 
     private void facebookInit(){
@@ -277,14 +274,13 @@ public class MainPresenter implements BaseContract.BasePresenter {
                     @Override
                     public void onComplete() {
                         mActivity.showMessage("ok API");
-
-                        mActivity.startListActivity();
+                        mActivity.startListActivity(userdata.socialId);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         mActivity.showMessage("denied API");
-                        mActivity.startListActivity();
+                        mActivity.startListActivity(userdata.socialId);
                         Log.d("error", e.getMessage());
                         e.printStackTrace();
                     }
@@ -292,10 +288,10 @@ public class MainPresenter implements BaseContract.BasePresenter {
         mDisposable.add(sendNewUser);
     }
 
-    private void setAccount(int socialWeb){
+    private void setAccount(String socialWeb){
         SharedPreferences activityPreferences = mActivity.getSharedPreferences("Who", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = activityPreferences.edit();
-        editor.putInt("socialWeb", socialWeb);
+        editor.putString("socialWeb", socialWeb);
         editor.commit();
     }
 

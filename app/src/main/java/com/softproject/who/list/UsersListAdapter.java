@@ -26,12 +26,14 @@ import java.util.concurrent.TimeUnit;
 
 public class UsersListAdapter extends RecyclerView.Adapter {
 
+    private String mSocialId;
     private ListActivity mActivity;
     private ArrayList<Userdata> mUsers;
 
-    public UsersListAdapter(ListActivity activity) {
+    public UsersListAdapter(ListActivity activity, String socialId) {
         mUsers = new ArrayList<Userdata>();
         mActivity = activity;
+        mSocialId = socialId;
     }
 
     @NonNull
@@ -44,11 +46,23 @@ public class UsersListAdapter extends RecyclerView.Adapter {
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
         final UserViewHolder holder = (UserViewHolder) viewHolder;
         //holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
-        holder.textViewNumber.setText(String.valueOf(i+1));
+        //holder.textViewNumber.setText(String.valueOf(i+1));
+        holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
         holder.textViewUsername.setText(mUsers.get(i).name);
+        if(mUsers.get(i).socialId.equals(mSocialId)){
+            Glide
+                    .with(mActivity.getApplicationContext())
+                    .load(mActivity.getResources().getDrawable(R.color.colorLightGreen))
+                    .into(holder.imageViewBackground);
+        }
         if(mUsers.get(i).isNew){
             holder.textViewIsNew.setText(mActivity.getResources().getString(R.string.new_user));
         }
@@ -184,6 +198,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         TextView textViewIsNew;
         ImageView imageViewAvatar;
         ImageView imageViewSocialWeb;
+        ImageView imageViewBackground;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -194,6 +209,7 @@ public class UsersListAdapter extends RecyclerView.Adapter {
             textViewIsNew = (TextView) itemView.findViewById(R.id.textViewIsNew);
             imageViewAvatar = (ImageView) itemView.findViewById(R.id.imageViewAvatar);
             imageViewSocialWeb = (ImageView) itemView.findViewById(R.id.imageViewSocialWeb);
+            imageViewBackground = (ImageView) itemView.findViewById(R.id.imageViewbackground);
         }
     }
 

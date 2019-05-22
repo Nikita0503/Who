@@ -22,7 +22,7 @@ public interface APIService {
     @POST("users/")
     Completable sendNewUser(@Header("Authorization") String header, @Body Userdata userdata);
 
-    @GET("users/?ordering=-auth_date")
+    @GET("users/?")
     Single<ArrayList<Userdata>> getUsers();
 
     @GET("users/?ordering=-auth_date")
