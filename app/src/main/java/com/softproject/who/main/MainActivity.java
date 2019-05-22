@@ -20,6 +20,7 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.ads.MobileAds;
 import com.softproject.who.BaseContract;
 import com.softproject.who.R;
 import com.softproject.who.list.ListActivity;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        MobileAds.initialize(this, "ca-app-pub-3433509722016307~1743026273");
         //String[] fingerprints = VKUtils.getCertificateFingerprint(this, this.getPackageName());
         //Log.d("VK", fingerprints[0]);
         mPresenter = new MainPresenter(this);

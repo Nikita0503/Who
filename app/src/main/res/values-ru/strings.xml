@@ -15,7 +15,8 @@
 
     <string name="today">Сегодня</string>
     <string name="day_ago">день назад</string>
-    <string name="days_ago">дней назад</string>
+    <string name="days_ago1">дня назад</string>
+    <string name="days_ago2">дней назад</string>
     <string name="new_user">Новый</string>
     <string name="description1">Для просмотра списка людей уже скачавших Who? - авторизуйтесь используя любую из предложенных социальных сетей</string>
     <string name="description2">Авторизуясь Вы соглашаетесь на внесение данных о себе (Ф.И.О., регион, фото) в наш список скачавших</string>

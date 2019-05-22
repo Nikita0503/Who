@@ -12,8 +12,13 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3433509722016307~1743026273"/>
+
         <activity android:name=".list.ListActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity android:name=".main.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>

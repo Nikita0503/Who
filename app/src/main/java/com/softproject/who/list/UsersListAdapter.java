@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.softproject.who.R;
 import com.softproject.who.model.APIUtils;
 import com.softproject.who.model.data.Userdata;
@@ -26,11 +28,17 @@ import java.util.concurrent.TimeUnit;
 
 public class UsersListAdapter extends RecyclerView.Adapter {
 
+    private static final int USER_ROW_TYPE = 0;
+    private static final int ADVERTISEMENT_ROW_TYPE = 1;
+
+
     private String mSocialId;
     private ListActivity mActivity;
     private ArrayList<Userdata> mUsers;
+    private AdRequest mAdRequest;
 
     public UsersListAdapter(ListActivity activity, String socialId) {
+        mAdRequest = new AdRequest.Builder().build();
         mUsers = new ArrayList<Userdata>();
         mActivity = activity;
         mSocialId = socialId;
@@ -38,115 +46,134 @@ public class UsersListAdapter extends RecyclerView.Adapter {
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.list_item, viewGroup, false);
-        return new UserViewHolder(view);
+        View view;
+        if (viewType == ADVERTISEMENT_ROW_TYPE) {
+            view = inflater.inflate(R.layout.advertisement, viewGroup, false);
+            return new UsersListAdapter.AdvertisementViewHolder(view);
+        }else{
+            view = inflater.inflate(R.layout.list_item, viewGroup, false);
+            return new UsersListAdapter.UserViewHolder(view);
+        }
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return position;
+    public int getItemViewType(int i) {
+        if(i%10==0 && i!=0){
+            return ADVERTISEMENT_ROW_TYPE;
+        }else{
+            return USER_ROW_TYPE;
+        }
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
-        final UserViewHolder holder = (UserViewHolder) viewHolder;
-        //holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
-        //holder.textViewNumber.setText(String.valueOf(i+1));
-        holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
-        holder.textViewUsername.setText(mUsers.get(i).name);
-        if(mUsers.get(i).socialId.equals(mSocialId)){
+        if(i%10==0 && i!=0){
+            AdvertisementViewHolder holder = (AdvertisementViewHolder) viewHolder;
+            holder.adView.loadAd(mAdRequest);
+        }else {
+            final UserViewHolder holder = (UserViewHolder) viewHolder;
+            //holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
+            //holder.textViewNumber.setText(String.valueOf(i+1));
+            holder.textViewNumber.setText(String.valueOf(mUsers.get(i).id));
+            holder.textViewUsername.setText(mUsers.get(i).name);
+
+            if (mUsers.get(i).socialId.equals(mSocialId)) {
+                //Glide
+                //        .with(mActivity.getApplicationContext())
+                //        .load(mActivity.getResources().getDrawable(R.color.colorLightGreen))
+                //        .into(holder.imageViewBackground);
+            }
+            if (mUsers.get(i).isNew) {
+                holder.textViewIsNew.setText(mActivity.getResources().getString(R.string.new_user));
+            }
+            int difference = getDifferenceTime(mUsers.get(i).authDate);
+            if (difference == 0) {
+                holder.textViewDaysAgo.setText(mActivity.getResources().getString(R.string.today));
+            } else if (difference == 1) {
+                holder.textViewDaysAgo.setText(difference + " " + mActivity.getResources().getString(R.string.day_ago));
+            } else if (difference >= 2 && difference <= 4) {
+                holder.textViewDaysAgo.setText(difference + " " + mActivity.getResources().getString(R.string.days_ago1));
+            } else {
+                holder.textViewDaysAgo.setText(difference + " " + mActivity.getResources().getString(R.string.days_ago2));
+            }
+
+            switch (mUsers.get(i).social) {
+                case APIUtils.FACEBOOK_ID:
+                    Glide
+                            .with(mActivity.getApplicationContext())
+                            .load(R.drawable.ic_facebook)
+                            .into(holder.imageViewSocialWeb);
+                    break;
+                case APIUtils.TWITTER_ID:
+                    Glide
+                            .with(mActivity.getApplicationContext())
+                            .load(R.drawable.ic_twitter)
+                            .into(holder.imageViewSocialWeb);
+                    break;
+                case APIUtils.INSTAGRAM_ID:
+                    Glide
+                            .with(mActivity.getApplicationContext())
+                            .load(R.drawable.ic_instagram)
+                            .into(holder.imageViewSocialWeb);
+                    break;
+                case APIUtils.VK_ID:
+                    Glide
+                            .with(mActivity.getApplicationContext())
+                            .load(R.drawable.ic_vkontakte)
+                            .into(holder.imageViewSocialWeb);
+                    break;
+            }
+
             Glide
                     .with(mActivity.getApplicationContext())
-                    .load(mActivity.getResources().getDrawable(R.color.colorLightGreen))
-                    .into(holder.imageViewBackground);
-        }
-        if(mUsers.get(i).isNew){
-            holder.textViewIsNew.setText(mActivity.getResources().getString(R.string.new_user));
-        }
-        int difference = getDifferenceTime(mUsers.get(i).authDate);
-        if(difference == 0){
-            holder.textViewDaysAgo.setText(mActivity.getResources().getString(R.string.today));
-        }else if(difference == 1){
-            holder.textViewDaysAgo.setText(difference + " " + mActivity.getResources().getString(R.string.day_ago));
-        }else{
-            holder.textViewDaysAgo.setText(difference + " " + mActivity.getResources().getString(R.string.days_ago));
-        }
-
-        switch (mUsers.get(i).social){
-            case APIUtils.FACEBOOK_ID:
-                Glide
-                        .with(mActivity.getApplicationContext())
-                        .load(R.drawable.ic_facebook)
-                        .into(holder.imageViewSocialWeb);
-                break;
-            case APIUtils.TWITTER_ID:
-                Glide
-                        .with(mActivity.getApplicationContext())
-                        .load(R.drawable.ic_twitter)
-                        .into(holder.imageViewSocialWeb);
-                break;
-            case APIUtils.INSTAGRAM_ID:
-                Glide
-                        .with(mActivity.getApplicationContext())
-                        .load(R.drawable.ic_instagram)
-                        .into(holder.imageViewSocialWeb);
-                break;
-            case APIUtils.VK_ID:
-                Glide
-                        .with(mActivity.getApplicationContext())
-                        .load(R.drawable.ic_vkontakte)
-                        .into(holder.imageViewSocialWeb);
-                break;
-        }
-
-        Glide
-                .with(mActivity.getApplicationContext())
-                .load(mUsers.get(i).photo)
-                .into(holder.imageViewAvatar);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!mUsers.get(i).isHidden){
-                    holder.textViewDescrption.setVisibility(View.VISIBLE);
-                    String description = "";
-                    if(mUsers.get(i).location!=null){
-                        if(!mUsers.get(i).location.equals("")) {
-                            description += "location: " + mUsers.get(i).location + "\n";
+                    .load(mUsers.get(i).photo)
+                    .into(holder.imageViewAvatar);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!mUsers.get(i).isHidden) {
+                        holder.textViewDescrption.setVisibility(View.VISIBLE);
+                        String description = "";
+                        if (mUsers.get(i).location != null) {
+                            if (!mUsers.get(i).location.equals("")) {
+                                description += "location: " + mUsers.get(i).location + "\n";
+                            }
                         }
-                    }
-                    if(mUsers.get(i).age!=null){
-                        description += "age: " + mUsers.get(i).age + "\n";
-                    }else if(mUsers.get(i).birthday!=null){
-                        description += "birthday: " + mUsers.get(i).birthday + "\n";
-                    }
-                    if(mUsers.get(i).gender!=null){
-                        description += mUsers.get(i).gender + "\n";
-                    }
-                    holder.textViewDescrption.setText(description);
-                    mUsers.get(i).isHidden = true;
-                    if(description.equals("")){
+                        if (mUsers.get(i).age != null) {
+                            description += "age: " + mUsers.get(i).age + "\n";
+                        } else if (mUsers.get(i).birthday != null) {
+                            description += "birthday: " + mUsers.get(i).birthday + "\n";
+                        }
+                        if (mUsers.get(i).gender != null) {
+                            description += mUsers.get(i).gender + "\n";
+                        }
+                        holder.textViewDescrption.setText(description);
+                        mUsers.get(i).isHidden = true;
+                        if (description.equals("")) {
+                            holder.textViewDescrption.setVisibility(View.GONE);
+                        }
+                    } else {
                         holder.textViewDescrption.setVisibility(View.GONE);
+                        mUsers.get(i).isHidden = false;
                     }
-                }else{
-                    holder.textViewDescrption.setVisibility(View.GONE);
-                    mUsers.get(i).isHidden = false;
                 }
-            }
-        });
-        holder.imageViewSocialWeb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Intent facebookIntent = getOpenFacebookIntent(i);
-                //mActivity.startActivity(facebookIntent);
-                if(mUsers.get(i).social!=APIUtils.FACEBOOK_ID) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mUsers.get(i).url));
-                    mActivity.startActivity(browserIntent);
+            });
+            holder.imageViewSocialWeb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Intent facebookIntent = getOpenFacebookIntent(i);
+                    //mActivity.startActivity(facebookIntent);
+                    if (mUsers.get(i).social != APIUtils.FACEBOOK_ID) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mUsers.get(i).url));
+                        mActivity.startActivity(browserIntent);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public Intent getOpenFacebookIntent(int i) {
@@ -188,6 +215,17 @@ public class UsersListAdapter extends RecyclerView.Adapter {
         long diffInMillies = date2.getTime() - date1.getTime();
         return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
     }
+
+    public static class AdvertisementViewHolder extends RecyclerView.ViewHolder{
+
+        AdView adView;
+
+        public AdvertisementViewHolder(View itemView) {
+            super(itemView);
+            adView = (AdView) itemView.findViewById(R.id.adView);
+        }
+    }
+
 
     public static class UserViewHolder extends RecyclerView.ViewHolder{
 
