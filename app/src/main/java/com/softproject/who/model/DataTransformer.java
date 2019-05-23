@@ -45,10 +45,11 @@ public class DataTransformer {
                         break;
                     case "id":
                         userdata.socialId = jsonObject.getString("id");
+                        userdata.url = "https://www.facebook.com/"+jsonObject.getString("id");
                         break;
                     case "link":
                         //userdata.url = jsonObject.getString("link");
-                        userdata.url = "www.google.com";
+
                         break;
                     case "age_range":
                         JSONObject objectMin = jsonObject.getJSONObject("age_range");

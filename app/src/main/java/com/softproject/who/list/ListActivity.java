@@ -31,6 +31,7 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
     RecyclerView recyclerView;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+    private EditText mEditTextSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +45,9 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
-        final EditText editTextSearch = (EditText) mToolbar.findViewById(R.id.search_edit_text);
-        editTextSearch.addTextChangedListener(new TextWatcher() {
+        mEditTextSearch = (EditText) mToolbar.findViewById(R.id.search_edit_text);
+
+        mEditTextSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 //Do nothing
@@ -53,7 +55,7 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                fetchUsers(editTextSearch.getText().toString());
+                fetchUsers(mEditTextSearch.getText().toString());
             }
 
             @Override
@@ -67,6 +69,7 @@ public class ListActivity extends AppCompatActivity implements BaseContract.Base
     public void onStart(){
         super.onStart();
         mPresenter.onStart();
+        mEditTextSearch.setText("");
         fetchUsers();
     }
 
