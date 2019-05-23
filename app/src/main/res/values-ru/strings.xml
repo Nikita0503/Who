@@ -20,4 +20,8 @@
     <string name="new_user">Новый</string>
     <string name="description1">Для просмотра списка людей уже скачавших Who? - авторизуйтесь используя любую из предложенных социальных сетей</string>
     <string name="description2">Авторизуясь Вы соглашаетесь на внесение данных о себе (Ф.И.О., регион, фото) в наш список скачавших</string>
+
+    <string name="do_you_agree">Для изпользования всех возможностей приложения, мы должны получить ссылку на Ваш профиль в Facebook. Вы согласны?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

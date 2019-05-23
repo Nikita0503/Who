@@ -20,4 +20,8 @@
     <string name="new_user">New</string>
     <string name="description1">To view a list of people who have already downloaded Who? - Log in using any of the proposed social networks</string>
     <string name="description2">By logging in you agree to enter data about yourself (name, region, photo) to our list of downloaded</string>
+
+    <string name="do_you_agree">To use the full functionality of the application, we need get your link to your profile on Facebook. Do you agree?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

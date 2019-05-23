@@ -1,6 +1,7 @@
 package com.softproject.who.main;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -11,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -46,7 +49,8 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
 
    @OnClick(R.id.imageViewFacebook)
    void onClickFacebook(){
-       mPresenter.facebookLogin();
+       Dialog permissionDialog = getPermissionsDialog();
+       permissionDialog.show();
    }
 
    @OnClick(R.id.imageViewTwitter)
@@ -86,6 +90,29 @@ public class MainActivity extends AppCompatActivity implements BaseContract.Base
         intent.putExtra("socialId", socailId);
         startActivity(intent);
     }
+
+    private Dialog getPermissionsDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.permission_dialog);
+        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorWhite)));
+        Button buttonOk = (Button) dialog.findViewById(R.id.buttonYes);
+        Button buttonCancel = (Button) dialog.findViewById(R.id.buttonNo);
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        buttonOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPresenter.facebookLogin();
+                dialog.dismiss();
+            }
+        });
+        return dialog;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
